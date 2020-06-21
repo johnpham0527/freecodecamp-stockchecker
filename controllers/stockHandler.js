@@ -30,9 +30,9 @@ function stockHandler (req, res, next) {
     stockRequest.end();
 
     return res.json({
-        stock: 'test',
-        price: '1.5',
-        likes: '0'
+        stock: stock,
+        price: price,
+        likes: '0' //this has to come from the database
     })
 
     //need to return an object {stock: 'goog', price: '1,000.40', likes: '2'}
