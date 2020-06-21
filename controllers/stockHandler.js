@@ -10,7 +10,7 @@ function stockHandler (req, res, next) {
         method: 'GET'
     }
 
-    let price;
+    let price = 0;
 
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
