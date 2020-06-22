@@ -4,6 +4,7 @@ const getDb = require('../db');
 
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
+    const like = req.query.like;
     let price = 0;
     let likes = 0;
 
@@ -18,7 +19,7 @@ function stockHandler (req, res, next) {
     }
 
     console.log(`request IP address is ${req.ipInfo.ip}`);
-
+    console.log(`like is ${like}`);
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
     const link = `https://repeated-alpaca.glitch.me/v1/stock/goog/quote`
