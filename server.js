@@ -6,6 +6,7 @@ var expect      = require('chai').expect;
 var cors        = require('cors');
 require('dotenv').config();
 const helmet    = require('helmet');
+const expressip = require('express-ip');
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
@@ -19,6 +20,8 @@ app.use(helmet.contentSecurityPolicy({
     styleSrc: ["'self'"]
   }
 }));
+
+app.use(expressip().getIpInfoMiddleware);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 

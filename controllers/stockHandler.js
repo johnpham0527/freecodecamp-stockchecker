@@ -15,11 +15,13 @@ function stockHandler (req, res, next) {
         // rejectUnauthorized: false
     }
 
+    console.log(`request IP address is ${req.ipInfo.ip}`);
+
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
-    //const link = `https://repeated-alpaca.glitch.me/v1/stock/goog/quote`
+    const link = `https://repeated-alpaca.glitch.me/v1/stock/goog/quote`
     //const link = `https://repeated-alpaca.glitch.me/v1/stock/msft/quote`
-    const link =`https://alphavantage.co`
+    //const link =`https://www.google.com`
 
     const stockRequest = https.get(link, function(stockResponse) {
     // const stockRequest = https.get(link, options, function(stockResponse) {
@@ -31,7 +33,7 @@ function stockHandler (req, res, next) {
 
         stockResponse.on('data', function(data) {
             price = data;
-            console.log(`data is ${data}`);
+            //console.log(`data is ${data}`);
         });
     })
         .on('error', function(err) {
