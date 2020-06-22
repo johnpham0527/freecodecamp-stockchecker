@@ -1,10 +1,12 @@
 const https = require('https');
+require('dotenv').config();
 
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
 
     let options = {
-        hostname: 'https://repeated-alpaca.glitch.me/v1/',
+        //hostname: 'https://repeated-alpaca.glitch.me/v1/',
+        hostname: `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`
         port: 443,
         path: '/v1/stock/' + stock + '/quote',
         method: 'GET'
