@@ -19,12 +19,15 @@ async function stockHandler (req, res, next) {
         // rejectUnauthorized: false
     }
 
-    console.log(`request IP address is ${ipAddress}`);
-    console.log(`like is ${like}`);
-    console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
+    // console.log(`request IP address is ${ipAddress}`);
+    // console.log(`like is ${like}`);
+    // console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
-    const link = `https://repeated-alpaca.glitch.me/v1/stock/goog/quote`
+    //const link = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`
     //const link = `https://repeated-alpaca.glitch.me/v1/stock/msft/quote`
+    const link = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=compact&apikey=process.env.ALPHA_VANTAGE';
+
+    console.log(`The link is ${link}`);
     //const link =`https://www.google.com`
 
     getDb.then(function(db) {
@@ -38,6 +41,12 @@ async function stockHandler (req, res, next) {
             //console.log(`stockResponse.headers is ${stockResponse.headers}`);
 
             stockResponse.on('data', function(data) {
+                console.log(`Hello Alpha Vantage!`);
+                //console.log(data);
+                //const body = JSON.parse(JSON.stringify(data));
+                //console.log(`data is ${} and body is ${typeof body}`);
+                //console.log(`Hello Alpha Vantage!`);
+                //console.log(`${data}`)
                 //price = data;
                 //console.log(`data is ${data}`);
             });
@@ -94,7 +103,7 @@ async function stockHandler (req, res, next) {
                     }
                 }
             }
-            
+
             return res.json({
                 stock: stock,
                 price: price,
