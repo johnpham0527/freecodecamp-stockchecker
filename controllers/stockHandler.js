@@ -79,7 +79,10 @@ function stockHandler (req, res, next) {
                 })
             }
             else {
-                //
+                /*
+                
+
+                */
             }
         })
     })
