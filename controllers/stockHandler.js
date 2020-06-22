@@ -1,5 +1,6 @@
 const https = require('https');
 require('dotenv').config();
+const getDb = require('../db');
 
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
@@ -40,6 +41,8 @@ function stockHandler (req, res, next) {
         console.error(`Received error while requesting stock quote: ${err}`);
         return next(err);
     })
+
+
 
     stockRequest.end();
 
