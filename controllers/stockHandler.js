@@ -27,7 +27,56 @@ function stockHandler (req, res, next) {
                     const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
                     const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
                     price = timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
-                    console.log(`price is ${JSON.stringify(price)}`);
+
+                    db.collection('stocks').findOne({stock: stock}, function(err, result) {
+                        if (err) {
+                            console.log(`Error finding stock in database: ${err}`);
+                            return next(err);
+                        }
+            
+                        if (!result) { //the stock doesn't already exist in the database
+                            const ipArray = [];
+            
+                            if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
+                                likes = 1;
+                                ipArray.push(ipAddress);
+                            }
+            
+                            db.collection('stocks').insertOne({
+                                stock: stock,
+                                likes: likes,
+                                ip: ipArray
+                            }, function(err, insertResult) {
+                                if (err) {
+                                    console.log(`Error inserting stock into database: ${err}`);
+                                    return next(err);
+                                }
+                            })
+                        }
+                        else { //the stock exists in the database
+                            likes = result.likes; //store the current value of likes from the database
+                            if (like) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
+                                let ipArray = result.ip;
+                                if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
+                                    likes++; //increment likes by one
+                                    ipArray.push(ipAddress)//add ipAddress to the IP array
+                                    db.collection('stocks').updateOne({stock: stock}, { $set: {likes: likes, ip: ipArray} }, function(err, updateResult) {
+                                        if (err) {
+                                            console.log(`Error updating stock: ${err}`);
+                                            return next(err);
+                                        }
+                                    })
+                                }
+                            }
+                        }
+            
+                        return res.json({
+                            stock: stock,
+                            price: price,
+                            likes: likes
+                        })
+                        
+                    })
                 }
                 catch(err) {
                     console.error(`Error parsing chunk data from stock quote API: ${err}`);
@@ -40,58 +89,6 @@ function stockHandler (req, res, next) {
         })
 
         stockRequest.end();
-
-        db.collection('stocks').findOne({stock: stock}, function(err, result) {
-            if (err) {
-                console.log(`Error finding stock in database: ${err}`);
-                return next(err);
-            }
-
-            if (!result) { //the stock doesn't already exist in the database
-                const ipArray = [];
-
-                if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
-                    likes = 1;
-                    ipArray.push(ipAddress);
-                }
-
-                db.collection('stocks').insertOne({
-                    stock: stock,
-                    likes: likes,
-                    ip: ipArray
-                }, function(err, insertResult) {
-                    if (err) {
-                        console.log(`Error inserting stock into database: ${err}`);
-                        return next(err);
-                    }
-                })
-            }
-            else { //the stock exists in the database
-                likes = result.likes; //store the current value of likes from the database
-                if (like) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
-                    let ipArray = result.ip;
-                    if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
-                        likes++; //increment likes by one
-                        ipArray.push(ipAddress)//add ipAddress to the IP array
-                        db.collection('stocks').updateOne({stock: stock}, { $set: {likes: likes, ip: ipArray} }, function(err, updateResult) {
-                            if (err) {
-                                console.log(`Error updating stock: ${err}`);
-                                return next(err);
-                            }
-                        })
-                    }
-                }
-            }
-
-            console.log(`price is ${price}`);
-
-            return res.json({
-                stock: stock,
-                price: price,
-                likes: likes
-            })
-            
-        })
     });
 }
 
