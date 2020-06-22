@@ -5,8 +5,8 @@ const getDb = require('../db');
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
-    let likes = 0;
-    let price = 0;
+    let likes = 0; //initializing variable for how many times the stock was liked
+    let price = 0; //initializing variable for the price of the stock
     let ipAddress = req.ipInfo.ip;
 
     let options = {
