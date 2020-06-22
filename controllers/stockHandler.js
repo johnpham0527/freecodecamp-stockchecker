@@ -83,6 +83,8 @@ function stockHandler (req, res, next) {
                 }
             }
 
+            console.log(`price is ${price}`);
+
             return res.json({
                 stock: stock,
                 price: price,
