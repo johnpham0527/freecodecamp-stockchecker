@@ -5,6 +5,7 @@ const getDb = require('../db');
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
     let price = 0;
+    let likes = 0;
 
     let options = {
         hostname: 'repeated-alpaca.glitch.me',
@@ -42,14 +43,49 @@ function stockHandler (req, res, next) {
         return next(err);
     })
 
+    getDb.then(function(db) {
+        db.collection('stocks').findOne(stock, function(err, result) {
+            if (err) {
+                console.log(`Error finding stock in database: ${err}`);
+                return next(err);
+            }
+            console.log(`The result of the database lookup is ${result}`);
 
+
+
+            if (!result) { //no result found
+
+                const ipArray = [];
+                ipArray.push(req.ipInfo.ip);
+                likes++;
+    
+                const stockData = {
+                    stock: stock,
+                    price: 0,
+                    likes: likes,
+                    ip: ipArray
+                }
+
+                db.collection.insertOne({stockData}, function(err, insertResult) {
+                    if (err) {
+                        console.log(`Error inserting stock into database: ${err}`);
+                        return next(err);
+                    }
+                    console.log(`Inserted stock ${stock} into database successfully`);
+                })
+            }
+            else {
+                //
+            }
+        })
+    })
 
     stockRequest.end();
 
     return res.json({
         stock: stock,
         price: price,
-        likes: '0' //this has to come from the database
+        likes: likes //this has to come from the database
     })
 
     //need to return an object {stock: 'goog', price: '1,000.40', likes: '2'}
