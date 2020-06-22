@@ -10,7 +10,6 @@ var chaiHttp = require('chai-http');
 var chai = require('chai');
 var assert = chai.assert;
 var server = require('../server');
-const getDb = require('../db');
 
 chai.use(chaiHttp);
 
