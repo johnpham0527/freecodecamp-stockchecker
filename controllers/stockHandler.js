@@ -7,6 +7,7 @@ function stockHandler (req, res, next) {
     const like = req.query.like;
     let likes = 0;
     let price = 0;
+    let ipAddress = req.ipInfo.ip;
 
     let options = {
         hostname: 'repeated-alpaca.glitch.me',
@@ -18,7 +19,7 @@ function stockHandler (req, res, next) {
         // rejectUnauthorized: false
     }
 
-    console.log(`request IP address is ${req.ipInfo.ip}`);
+    console.log(`request IP address is ${ipAddress}`);
     console.log(`like is ${like}`);
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
@@ -63,7 +64,7 @@ function stockHandler (req, res, next) {
                 const ipArray = [];
                 if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
                     likes = 1;
-                    ipArray.push(req.ipInfo.ip);
+                    ipArray.push(ipAddress);
                 }
 
                 db.collection('stocks').insertOne({
@@ -81,17 +82,20 @@ function stockHandler (req, res, next) {
             }
             else { //result was found
                 if (like) { //if like equal true rather than undefined
-                    
+                    likes = result.likes;
+                    console.log(`The IP array contains ${result.ip} and the number of likes is ${likes}`);
+                    let ipArray = result.ip;
+                    if (ipArray.indexOf(ip) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
+                        likes++; //increment likes by one
+                        ipArray.push(ipAddress)//add ipAddress to the IP array
+                        db.collection('stocks').updateOne({stock: stock}, { $set: {likes: like, ip: ipArray} }, function(err, updateResult) {
+                            if (err) {
+                                console.log(`Error updating stock: ${err}`);
+                                return next(err);
+                            }
+                        })
+                    }
                 }
-
-                /*
-                1. Don't create new stock
-                2. Was the stock liked?
-                3. If it was liked, does IP address exist in the array?
-                    a. If the IP address does exist, do not update like
-                    b. If the IP address doesn't exist, increment like by one and add the IP address to the array
-
-                */
             }
         })
     })
