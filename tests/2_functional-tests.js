@@ -49,7 +49,7 @@ suite('Functional Tests', function() {
           assert.isString(res.body.price, 'price is a string');
           assert.isNumber(res.body.likes, 'likes is a number');
 
-          likes = res.body.likes;
+          likes = res.body.likes; //we'll need to reference this updated likes value for the next test
 
           done();
         });
@@ -60,7 +60,6 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog', like: true})
         .end(function(err, res){
-        
           assert.equal(res.status, 200);
           assert.isObject(res.body, 'stockData is an object');
           assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
@@ -82,8 +81,6 @@ suite('Functional Tests', function() {
       test('2 stocks with like', function(done) {
         
       });
-      
-      /*** Tear down testing ***/
 
     });
 
