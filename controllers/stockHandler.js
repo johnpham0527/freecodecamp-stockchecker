@@ -5,8 +5,8 @@ const getDb = require('../db');
 function stockHandler (req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
-    let price = 0;
     let likes = 0;
+    let price = 0;
 
     let options = {
         hostname: 'repeated-alpaca.glitch.me',
@@ -62,16 +62,14 @@ function stockHandler (req, res, next) {
 
                 const ipArray = [];
                 ipArray.push(req.ipInfo.ip);
-                likes++;
-    
-                const stockData = {
+                likes = like ? 1 : 0; //if like is true, then set likes to 1. Otherwise, it is initialized in the database as zero
+
+                db.collection('stocks').insertOne({
                     stock: stock,
                     price: 0,
                     likes: likes,
                     ip: ipArray
-                }
-
-                db.collection('stocks').insertOne({stockData}, function(err, insertResult) {
+                }, function(err, insertResult) {
                     if (err) {
                         console.log(`Error inserting stock into database: ${err}`);
                         return next(err);
