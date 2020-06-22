@@ -85,7 +85,7 @@ function stockHandler (req, res, next) {
                     likes = result.likes;
                     console.log(`The IP array contains ${result.ip} and the number of likes is ${likes}`);
                     let ipArray = result.ip;
-                    if (ipArray.indexOf(ip) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
+                    if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
                         likes++; //increment likes by one
                         ipArray.push(ipAddress)//add ipAddress to the IP array
                         db.collection('stocks').updateOne({stock: stock}, { $set: {likes: like, ip: ipArray} }, function(err, updateResult) {
