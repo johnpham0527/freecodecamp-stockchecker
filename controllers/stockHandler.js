@@ -44,7 +44,11 @@ function stockHandler (req, res, next) {
     })
 
     getDb.then(function(db) {
-        db.collection('stocks').findOne(stock, function(err, result) {
+        let stockToFind = {
+            stock: stock
+        }
+
+        db.collection('stocks').findOne(stockToFind, function(err, result) {
             if (err) {
                 console.log(`Error finding stock in database: ${err}`);
                 return next(err);
@@ -66,7 +70,7 @@ function stockHandler (req, res, next) {
                     ip: ipArray
                 }
 
-                db.collection.insertOne({stockData}, function(err, insertResult) {
+                db.collection('stocks').insertOne({stockData}, function(err, insertResult) {
                     if (err) {
                         console.log(`Error inserting stock into database: ${err}`);
                         return next(err);
