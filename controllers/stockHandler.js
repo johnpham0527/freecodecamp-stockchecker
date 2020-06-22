@@ -5,14 +5,17 @@ function stockHandler (req, res, next) {
     const stock = req.query.stock;
 
     let options = {
-        //hostname: 'https://repeated-alpaca.glitch.me/v1/',
-        hostname: `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`,
+        hostname: 'repeated-alpaca.glitch.me',
+        //hostname: `alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`,
+        //hostname: 'google.com',
         port: 443,
         path: '/v1/stock/' + stock + '/quote',
         method: 'GET'
     }
 
     let price = 0;
+
+    console.log(`path is ${options.path}`);
 
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
