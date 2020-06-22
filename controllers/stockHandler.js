@@ -9,47 +9,30 @@ async function stockHandler (req, res, next) {
     var price = 0; //initializing variable for the price of the stock
     let ipAddress = req.ipInfo.ip;
 
-    let options = {
-        hostname: 'repeated-alpaca.glitch.me',
-        //hostname: `alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`,
-        port: 443,
-        //path: '/v1/stock/' + stock + '/quote',
-        path: `/v1/stock/msft/quote`,
-        method: 'GET',
-        // rejectUnauthorized: false
-    }
-
-    // console.log(`request IP address is ${ipAddress}`);
-    // console.log(`like is ${like}`);
-    // console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
-
-    //const link = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`
-    //const link = `https://repeated-alpaca.glitch.me/v1/stock/msft/quote`
-    const link = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=compact&apikey=process.env.ALPHA_VANTAGE';
-
-    console.log(`The link is ${link}`);
-    //const link =`https://www.google.com`
+    const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}interval=5min&apikey=process.env.ALPHA_VANTAGE_API_KEY`;
 
     getDb.then(function(db) {
 
-        const stockRequest = https.get(link, function(stockResponse) {
-        // const stockRequest = https.get(link, options, function(stockResponse) {
-        //const stockRequest = https.get(`https://repeated-alpaca.glitch.com/v1/stock/${stock}/quote`, function(stockResponse) {
-        // const stockRequest = https.request(options, function (stockResponse) {
-            // console.log(`statusCode: ${res.statusCode}`);
-            //console.log(`status code is ${stockResponse.statusCode}`);
-            //console.log(`stockResponse.headers is ${stockResponse.headers}`);
+        const stockRequest = https.get(link, function(stockResponse) {          
+            stockResponse.setEncoding('utf8');
+            let rawData = '';
 
-            stockResponse.on('data', function(data) {
-                console.log(`Hello Alpha Vantage!`);
-                //console.log(data);
-                //const body = JSON.parse(JSON.stringify(data));
-                //console.log(`data is ${} and body is ${typeof body}`);
-                //console.log(`Hello Alpha Vantage!`);
-                //console.log(`${data}`)
-                //price = data;
-                //console.log(`data is ${data}`);
+            stockResponse.on('data', function(chunk) { //this is a stream of data
+                rawData += chunk; //collect the chunk data into rawData
             });
+
+            stockResponse.on('end', function() {
+                try {
+                    const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
+                    const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
+                    const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
+                    price = timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
+                    console.log(`price is ${JSON.stringify(price)}`);
+                }
+                catch(err) {
+                    console.error(`Error parsing chunk data from stock quote API: ${err}`);
+                }
+            })
         })
             .on('error', function(err) {
             console.error(`Received error while requesting stock quote: ${err}`);
@@ -65,8 +48,8 @@ async function stockHandler (req, res, next) {
             }
 
             if (!result) { //the stock doesn't already exist in the database
-
                 const ipArray = [];
+
                 if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
                     likes = 1;
                     ipArray.push(ipAddress);
@@ -74,7 +57,6 @@ async function stockHandler (req, res, next) {
 
                 db.collection('stocks').insertOne({
                     stock: stock,
-                    price: 0,
                     likes: likes,
                     ip: ipArray
                 }, function(err, insertResult) {
