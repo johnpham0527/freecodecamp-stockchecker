@@ -58,11 +58,13 @@ function stockHandler (req, res, next) {
 
 
 
-            if (!result) { //no result found
+            if (!result) { //the stock doesn't already exist in the database
 
                 const ipArray = [];
-                ipArray.push(req.ipInfo.ip);
-                likes = like ? 1 : 0; //if like is true, then set likes to 1. Otherwise, it is initialized in the database as zero
+                if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
+                    likes = 1;
+                    ipArray.push(req.ipInfo.ip);
+                }
 
                 db.collection('stocks').insertOne({
                     stock: stock,
@@ -78,7 +80,9 @@ function stockHandler (req, res, next) {
                 })
             }
             else { //result was found
-
+                if (like) { //if like equal true rather than undefined
+                    
+                }
 
                 /*
                 1. Don't create new stock
