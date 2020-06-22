@@ -26,23 +26,23 @@ function stockHandler (req, res, next) {
     //const link = `https://repeated-alpaca.glitch.me/v1/stock/msft/quote`
     //const link =`https://www.google.com`
 
-    const stockRequest = https.get(link, function(stockResponse) {
-    // const stockRequest = https.get(link, options, function(stockResponse) {
-    //const stockRequest = https.get(`https://repeated-alpaca.glitch.com/v1/stock/${stock}/quote`, function(stockResponse) {
-    // const stockRequest = https.request(options, function (stockResponse) {
-        // console.log(`statusCode: ${res.statusCode}`);
-        console.log(`status code is ${stockResponse.statusCode}`);
-        console.log(`stockResponse.headers is ${stockResponse.headers}`);
+    // const stockRequest = https.get(link, function(stockResponse) {
+    // // const stockRequest = https.get(link, options, function(stockResponse) {
+    // //const stockRequest = https.get(`https://repeated-alpaca.glitch.com/v1/stock/${stock}/quote`, function(stockResponse) {
+    // // const stockRequest = https.request(options, function (stockResponse) {
+    //     // console.log(`statusCode: ${res.statusCode}`);
+    //     //console.log(`status code is ${stockResponse.statusCode}`);
+    //     //console.log(`stockResponse.headers is ${stockResponse.headers}`);
 
-        stockResponse.on('data', function(data) {
-            price = data;
-            //console.log(`data is ${data}`);
-        });
-    })
-        .on('error', function(err) {
-        console.error(`Received error while requesting stock quote: ${err}`);
-        return next(err);
-    })
+    //     stockResponse.on('data', function(data) {
+    //         price = data;
+    //         //console.log(`data is ${data}`);
+    //     });
+    // })
+    //     .on('error', function(err) {
+    //     console.error(`Received error while requesting stock quote: ${err}`);
+    //     return next(err);
+    // })
 
     getDb.then(function(db) {
         let stockToFind = {
