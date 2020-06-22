@@ -1,16 +1,26 @@
 const https = require('https');
 require('dotenv').config();
 const getDb = require('../db');
+const handleOneStock = require('./handleOneStock');
+const handleTwoStocks = require('./handleTwoStocks');
 
 function stockHandler (req, res, next) {
+    const stock2 = req.query.stock2;
+
+    if (!stock2) {
+        handleOneStock(req, res, next);
+    }
+
+    else {
+        handleTwoStocks(req, res, next);
+    }
+
     const stock = req.query.stock;
     const like = req.query.like;
     const ipAddress = req.ipInfo.ip; //obtain the IP address using middleware
     const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
     let likes = 0; //initializing variable for how many times the stock was liked
     let price = 0; //initializing variable for the price of the stock
-
-    console.log(`Alpha Vantage key is ${process.env.ALPHA_VANTAGE_API_KEY}`);
 
     getDb.then(function(db) {
         const stockRequest = https.get(link, function(stockResponse) {          
