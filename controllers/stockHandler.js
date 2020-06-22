@@ -26,23 +26,23 @@ function stockHandler (req, res, next) {
     //const link = `https://repeated-alpaca.glitch.me/v1/stock/msft/quote`
     //const link =`https://www.google.com`
 
-    // const stockRequest = https.get(link, function(stockResponse) {
-    // // const stockRequest = https.get(link, options, function(stockResponse) {
-    // //const stockRequest = https.get(`https://repeated-alpaca.glitch.com/v1/stock/${stock}/quote`, function(stockResponse) {
-    // // const stockRequest = https.request(options, function (stockResponse) {
-    //     // console.log(`statusCode: ${res.statusCode}`);
-    //     //console.log(`status code is ${stockResponse.statusCode}`);
-    //     //console.log(`stockResponse.headers is ${stockResponse.headers}`);
+    const stockRequest = https.get(link, function(stockResponse) {
+    // const stockRequest = https.get(link, options, function(stockResponse) {
+    //const stockRequest = https.get(`https://repeated-alpaca.glitch.com/v1/stock/${stock}/quote`, function(stockResponse) {
+    // const stockRequest = https.request(options, function (stockResponse) {
+        // console.log(`statusCode: ${res.statusCode}`);
+        //console.log(`status code is ${stockResponse.statusCode}`);
+        //console.log(`stockResponse.headers is ${stockResponse.headers}`);
 
-    //     stockResponse.on('data', function(data) {
-    //         price = data;
-    //         //console.log(`data is ${data}`);
-    //     });
-    // })
-    //     .on('error', function(err) {
-    //     console.error(`Received error while requesting stock quote: ${err}`);
-    //     return next(err);
-    // })
+        stockResponse.on('data', function(data) {
+            price = data;
+            //console.log(`data is ${data}`);
+        });
+    })
+        .on('error', function(err) {
+        console.error(`Received error while requesting stock quote: ${err}`);
+        return next(err);
+    })
 
     getDb.then(function(db) {
         let stockToFind = {
@@ -77,9 +77,15 @@ function stockHandler (req, res, next) {
                     console.log(`Inserted stock ${stock} into database successfully`);
                 })
             }
-            else {
+            else { //result was found
+
+
                 /*
-                
+                1. Don't create new stock
+                2. Was the stock liked?
+                3. If it was liked, does IP address exist in the array?
+                    a. If the IP address does exist, do not update like
+                    b. If the IP address doesn't exist, increment like by one and add the IP address to the array
 
                 */
             }
