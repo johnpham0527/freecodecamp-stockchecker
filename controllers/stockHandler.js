@@ -6,7 +6,7 @@ function stockHandler (req, res, next) {
 
     let options = {
         //hostname: 'https://repeated-alpaca.glitch.me/v1/',
-        hostname: `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`
+        hostname: `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE}`,
         port: 443,
         path: '/v1/stock/' + stock + '/quote',
         method: 'GET'
