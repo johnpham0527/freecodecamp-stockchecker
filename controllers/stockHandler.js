@@ -15,12 +15,12 @@ function stockHandler (req, res, next) {
 
     let price = 0;
 
-    console.log(`path is ${options.path}`);
-
     console.log(`req.query.stock is ${JSON.stringify(req.query.stock)}`);
 
     const stockRequest = https.request(options, function (stockResponse) {
-        console.log(`statusCode: ${res.statusCode}`);
+        // console.log(`statusCode: ${res.statusCode}`);
+        console.log(`status code is ${stockResponse.statusCode}`);
+        console.log(`stockResponse.head is ${stockResponse.head}`);
 
         stockResponse.on('data', function(data) {
             price = data;
