@@ -94,7 +94,9 @@ suite('Functional Tests', function() {
       });
       
       test('2 stocks with like', function(done) {
-        
+        //Pick two stocks that are not in the database
+        //Get single price for both stocks. Do not indicate like. Store the like values (presumably zero).
+        //Get the price for both stocks. Indicate like. Assert that the current like values for both stocks should be one greater than the stored value
       });
 
     });
