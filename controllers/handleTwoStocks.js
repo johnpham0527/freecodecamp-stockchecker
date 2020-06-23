@@ -17,8 +17,17 @@ function handleTwoStocks(req, res, next) {
     const price2 = 0; //default price for likes for stock #2
 
     getDb.then(function(db) {
-        const stockRequest1 = https.get(link1, function(stockResponse) {
-            
+        const stockRequest1 = https.get(link1, function(stockResponse1) {
+            stockResponse1.setEncoding('utf8');
+            let rawData1 = '';
+
+            stockResponse1.on('data', function(chunk) {
+                rawData += chunk;
+            });
+
+            stockResponse1.on('end', function() {
+                
+            })
         })
     })
 
