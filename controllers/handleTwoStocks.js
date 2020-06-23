@@ -26,9 +26,20 @@ function handleTwoStocks(req, res, next) {
             });
 
             stockResponse1.on('end', function() {
-                
+                try {
+
+                }
+                catch(err) {
+                    console.error(`Error parsing chunk data from API for the first stock: ${err}`);
+                }
             })
         })
+            .on('error', function(err) {
+                console.error(`Received error while requesting first stock quote: ${err}`);
+                return next(err);
+            })
+        
+        stockRequest1.end();
     })
 
 }
