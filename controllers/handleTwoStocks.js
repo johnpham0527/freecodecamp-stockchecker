@@ -22,7 +22,7 @@ function handleTwoStocks(req, res, next) {
             let rawData1 = '';
 
             stockResponse1.on('data', function(chunk1) {
-                rawData += chunk;
+                rawData1 += chunk1;
             });
 
             stockResponse1.on('end', function() {
