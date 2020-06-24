@@ -42,7 +42,6 @@ function handleTwoStocks(req, res, next) {
                                 const mostRecentKey1 = Object.keys(timeSeries1)[0]; //obtain the most recent key
                                 price1 = timeSeries1[mostRecentKey1]['4. close']; //set price to the last five-minute interval's closing quote
 
-
                                 const parsedData2 = JSON.parse(rawData2);
                                 const timeSeries2 = parsedData2['Time Series (5min)']; //parse only the time series data
                                 const mostRecentKey2 = Object.keys(timeSeries2)[0]; //obtain the most recent key
@@ -50,6 +49,13 @@ function handleTwoStocks(req, res, next) {
 
                                 console.log(`price1 is ${price1} and price2 is ${price2}`);
                                 res.send(`price1 is ${price1} and price2 is ${price2}`);
+
+                                /*
+                                To-do: handle stock #1, then store likes1
+                                Handle stock #2, then store likes2
+                                Calculate rel_likes1 and rel_likes2
+                                Return array: stock1 name, price and rel_likes1; stock2 name, price and rel_likes2
+                                */
 
                             }
                             catch(err) {
