@@ -36,9 +36,24 @@ function handleTwoStocks(req, res, next) {
                         })
 
                         stockResponse2.on('end', function() {
-                            // try {
-                            //     const parsedData1 = JSON.parse
-                            // }
+                            try {
+                                const parsedData1 = JSON.parse(rawData1);
+                                const timeSeries = parsedData1['Time Series (5min)']; //parse only the time series data
+                                const mostRecentKey1 = Object.keys(timeSeries)[0]; //obtain the most recent key
+                                price1 = timeSeries[mostRecentKey1]['4. close']; //set price to the last five-minute interval's closing quote
+
+
+                                const parsedData2 = JSON.parse(rawData2);
+                                const timeSeries = parsedData2['Time Series (5min)']; //parse only the time series data
+                                const mostRecentKey2 = Object.keys(timeSeries)[0]; //obtain the most recent key
+                                price2 = timeSeries[mostRecentKey2]['4. close']; //set price to the last five-minute interval's closing quote
+
+                                console.log(`price1 is ${price1} and price2 is ${price2}`);
+
+                            }
+                            catch {
+                                console.error(`Error parsing chunk data from API for the second stock: ${err}`);
+                            }
 
                         })
 
