@@ -11,10 +11,10 @@ function handleTwoStocks(req, res, next) {
     const ipAddress = req.ipInfo.ip;
     const link1 = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock1}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
     const link2 = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock2}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
-    const likes1 = 0; //default value for likes for stock #1
-    const likes2 = 0; //default value for likes for stock #2
-    const price1 = 0; //default price for likes for stock #1
-    const price2 = 0; //default price for likes for stock #2
+    let likes1 = 0; //default value for likes for stock #1
+    let likes2 = 0; //default value for likes for stock #2
+    let price1 = 0; //default price for likes for stock #1
+    let price2 = 0; //default price for likes for stock #2
 
     getDb.then(function(db) {
         const stockRequest1 = https.get(link1, function(stockResponse1) { //get stock quote for stock #1
@@ -40,15 +40,16 @@ function handleTwoStocks(req, res, next) {
                                 const parsedData1 = JSON.parse(rawData1);
                                 const timeSeries1 = parsedData1['Time Series (5min)']; //parse only the time series data
                                 const mostRecentKey1 = Object.keys(timeSeries1)[0]; //obtain the most recent key
-                                price1 = timeSeries[mostRecentKey1]['4. close']; //set price to the last five-minute interval's closing quote
+                                price1 = timeSeries1[mostRecentKey1]['4. close']; //set price to the last five-minute interval's closing quote
 
 
                                 const parsedData2 = JSON.parse(rawData2);
                                 const timeSeries2 = parsedData2['Time Series (5min)']; //parse only the time series data
                                 const mostRecentKey2 = Object.keys(timeSeries2)[0]; //obtain the most recent key
-                                price2 = timeSeries[mostRecentKey2]['4. close']; //set price to the last five-minute interval's closing quote
+                                price2 = timeSeries2[mostRecentKey2]['4. close']; //set price to the last five-minute interval's closing quote
 
                                 console.log(`price1 is ${price1} and price2 is ${price2}`);
+                                res.send(`price1 is ${price1} and price2 is ${price2}`);
 
                             }
                             catch(err) {
