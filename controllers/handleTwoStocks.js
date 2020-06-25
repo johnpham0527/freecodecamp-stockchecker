@@ -5,8 +5,6 @@ const getDb = require('../db');
 const { getPrice, getLikesFromExistingStock, getLikesFromNewStock } = require('./handleOneStock');
 
 function handleTwoStocks(req, res, next) {
-    console.log('Handle two stocks');
-
     const stock1 = req.query.stock;
     const stock2 = req.query.stock2;
     const likeBoolean = req.query.like;
