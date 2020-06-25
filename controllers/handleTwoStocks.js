@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require(`http`);
 require('dotenv').config();
 const getDb = require('../db');
 
@@ -15,6 +16,26 @@ function handleTwoStocks(req, res, next) {
     let likes2 = 0; //default value for likes for stock #2
     let price1 = 0; //default price for likes for stock #1
     let price2 = 0; //default price for likes for stock #2
+
+    const testRequest = http.get(`http://localhost:3000/api/stock-prices?stock=${stock1}`, function(response) {
+        response.setEncoding('utf8');
+        let rawData = '';
+
+        response.on('data', function(chunk) {
+            rawData += chunk;
+        })
+
+        response.on('end', function() {
+            try {
+                const parsedData = JSON.parse(rawData);
+                console.log(`The parsed test data is ${JSON.stringify(parsedData)}`);
+            }
+            catch(err) {
+                console.error(`Test error: ${err}`);
+            }
+        })
+    })
+
 
     getDb.then(function(db) {
         const stockRequest1 = https.get(link1, function(stockResponse1) { //get stock quote for stock #1
