@@ -1,7 +1,7 @@
 const https = require('https');
 require('dotenv').config();
 const getDb = require('../db');
-const handleOneStock = require('./handleOneStock');
+const { handleOneStock }= require('./handleOneStock');
 const handleTwoStocks = require('./handleTwoStocks');
 
 function stockHandler (req, res, next) {

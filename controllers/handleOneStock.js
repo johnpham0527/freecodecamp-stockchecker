@@ -99,4 +99,4 @@ function handleOneStock(req, res, next) {
     });
 }
 
-module.exports = handleOneStock;
+module.exports = { handleOneStock, getPrice };
