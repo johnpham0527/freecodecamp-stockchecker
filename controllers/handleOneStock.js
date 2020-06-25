@@ -9,11 +9,11 @@ function getPrice(rawData) { //given raw data from Alpha Vantage, get the price
     return timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
 }
 
-function getLikesFromNewStock(stock, like, ipAddress, db) {
+function getLikesFromNewStock(stock, likeBoolean, ipAddress, db) {
     let likes = 0;
     const ipArray = [];
             
-    if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
+    if (likeBoolean) { //set likes to 1 and add the IP address to the array only if the stock was liked
         likes = 1;
         ipArray.push(ipAddress);
     }
@@ -31,10 +31,10 @@ function getLikesFromNewStock(stock, like, ipAddress, db) {
     return likes;
 }
 
-function getLikesFromExistingStock(result, stock, like, ipAddress, db) {
+function getLikesFromExistingStock(result, stock, likeBoolean, ipAddress, db) {
     let likes = result.likes; //store the current value of likes from the database
 
-    if (like) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
+    if (likeBoolean) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
         let ipArray = result.ip; //store the current value of the IP address array from the database
 
         if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
