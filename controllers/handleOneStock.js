@@ -9,13 +9,34 @@ function getPrice(rawData) { //given raw data from Alpha Vantage, get the price
     return timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
 }
 
+function getLikesFromNewStock(stock, like, ipAddress, db, next) {
+    let likes = 0;
+    const ipArray = [];
+            
+    if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
+        likes = 1;
+        ipArray.push(ipAddress);
+    }
+
+    db.collection('stocks').insertOne({
+        stock: stock,
+        likes: likes,
+        ip: ipArray
+    }, function(err, insertResult) {
+        if (err) {
+            console.log(`Error inserting stock into database: ${err}`);
+            return next(err);
+        }
+    })
+
+    return likes;
+}
+
 function handleOneStock(req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
     const ipAddress = req.ipInfo.ip; //obtain the IP address using middleware
     const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
-    let likes = 0; //initializing variable for how many times the stock was liked
-    let price = 0; //initializing variable for the price of the stock
 
     getDb.then(function(db) {
         const stockRequest = https.get(link, function(stockResponse) {          
@@ -28,32 +49,18 @@ function handleOneStock(req, res, next) {
 
             stockResponse.on('end', function() {
                 try {
-                    price = getPrice(rawData);
-
                     db.collection('stocks').findOne({stock: stock}, function(err, result) {
+                        let price = getPrice(rawData); //get stock price
+                        let likes = 0; //initializing variable for how many times the stock was liked
+
                         if (err) {
                             console.log(`Error finding stock in database: ${err}`);
                             return next(err);
                         }
             
                         if (!result) { //the stock doesn't already exist in the database
-                            const ipArray = [];
-            
-                            if (like) { //set likes to 1 and add the IP address to the array only if the stock was liked
-                                likes = 1;
-                                ipArray.push(ipAddress);
-                            }
-            
-                            db.collection('stocks').insertOne({
-                                stock: stock,
-                                likes: likes,
-                                ip: ipArray
-                            }, function(err, insertResult) {
-                                if (err) {
-                                    console.log(`Error inserting stock into database: ${err}`);
-                                    return next(err);
-                                }
-                            })
+                            likes = getLikesFromNewStock(stock, like, ipAddress, db, next); //insert new stock into database and get the number of likes (1)
+
                         }
                         else { //the stock exists in the database
                             likes = result.likes; //store the current value of likes from the database
