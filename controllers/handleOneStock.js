@@ -2,6 +2,13 @@ const https = require('https');
 require('dotenv').config();
 const getDb = require('../db');
 
+function getPrice(rawData) { //given raw data from Alpha Vantage, get the price
+    const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
+    const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
+    const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
+    return timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
+}
+
 function handleOneStock(req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
@@ -21,10 +28,12 @@ function handleOneStock(req, res, next) {
 
             stockResponse.on('end', function() {
                 try {
-                    const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
-                    const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
-                    const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
-                    price = timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
+                    // const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
+                    // const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
+                    // const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
+                    // price = timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
+
+                    price = getPrice(rawData);
 
                     db.collection('stocks').findOne({stock: stock}, function(err, result) {
                         if (err) {
