@@ -80,13 +80,23 @@ suite('Functional Tests', function() {
         .query({stock: 'goog', stock2: 'msft'})
         .end(function(err, res) {
           assert.equal(res.status, 200);
-          
-          //done();
+          assert.isObject(res.body, 'stockData is an object');
+          assert.isArray(res.body, 'the returned object is an array');
+          assert.equal(res.body.length, 2, 'the returned array has two stock elements');
+          assert.property(res.body[0], 'stock', 'the first stock contains stock ticker string');
+          assert.property(res.body[0], 'price', 'the first stock contains decimal price in string format');
+          assert.property(res.body[0], 'rel_likes', 'the first stock contains rel_likes, which is an integer');
+          assert.property(res.body[1], 'stock', 'the second stock contains stock ticker string');
+          assert.property(res.body[1], 'price', 'the second stock contains decimal price in string format');
+          assert.property(res.body[1], 'rel_likes', 'the second stock contains rel_likes, which is an integer');
+          done();
         })
       });
       
       test('2 stocks with like', function(done) {
-        
+        //Pick two stocks that are not in the database
+        //Get single price for both stocks. Do not indicate like. Store the like values (presumably zero).
+        //Get the price for both stocks. Indicate like. Assert that the current like values for both stocks should be one greater than the stored value
       });
 
     });

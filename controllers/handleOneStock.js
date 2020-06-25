@@ -82,9 +82,9 @@ function handleOneStock(req, res, next) {
             })
         })
             .on('error', function(err) {
-            console.error(`Received error while requesting stock quote: ${err}`);
-            return next(err);
-        })
+                console.error(`Received error while requesting stock quote: ${err}`);
+                return next(err);
+            })
 
         stockRequest.end();
     });
