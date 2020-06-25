@@ -69,8 +69,8 @@ function handleOneStock(req, res, next) {
 
             stockResponse.on('end', function() {
                 try {
-                    db.collection('stocks').findOne({stock: stock}, function(err, result) {
-                        let price = getPrice(rawData); //get stock price
+                    db.collection('stocks').findOne({stock: stock}, async function(err, result) {
+                        let price = await getPrice(rawData); //get stock price
                         let likes = 0; //initializing variable for how many times the stock was liked
 
                         if (err) {

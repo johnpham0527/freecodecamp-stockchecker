@@ -56,7 +56,7 @@ function handleTwoStocks(req, res, next) {
 
                         stockResponse2.on('end', function() {
                             try {
-                                db.collection('stocks').findOne({stock: stock2}, function(err, result) {
+                                db.collection('stocks').findOne({stock: stock2}, async function(err, result) {
                                     if (err) {
                                         console.log(`Error finding stock in database: ${err}`);
                                         return next(err);
@@ -71,7 +71,7 @@ function handleTwoStocks(req, res, next) {
             
                                     stockData2 = {
                                         stock: stock2,
-                                        price: getPrice(rawData2),
+                                        price: await getPrice(rawData2),
                                     };
 
                                     //calculate and assign rel_likes
