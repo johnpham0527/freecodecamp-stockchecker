@@ -67,7 +67,7 @@ function handleOneStock(req, res, next) {
                 rawData += chunk; //collect the chunk data into rawData
             });
 
-            stockResponse.on('end', async function() {
+            stockResponse.on('end', function() {
                 try {
                     db.collection('stocks').findOne({stock: stock}, function(err, result) {
                         let price = getPrice(rawData); //get stock price
