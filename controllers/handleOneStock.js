@@ -56,7 +56,7 @@ function handleOneStock(req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
     const ipAddress = req.ipInfo.ip; //obtain the IP address using middleware
-    const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
+    const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${req.query.stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
 
     getDb.then(function(db) {
         const stockRequest = https.get(link, function(stockResponse) {          
@@ -67,7 +67,7 @@ function handleOneStock(req, res, next) {
                 rawData += chunk; //collect the chunk data into rawData
             });
 
-            stockResponse.on('end', function() {
+            stockResponse.on('end', async function() {
                 try {
                     db.collection('stocks').findOne({stock: stock}, function(err, result) {
                         let price = getPrice(rawData); //get stock price
