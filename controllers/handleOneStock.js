@@ -101,4 +101,4 @@ function handleOneStock(req, res, next) {
     });
 }
 
-module.exports = { handleOneStock, getPrice };
+module.exports = { handleOneStock, getPrice, getLikesFromNewStock };
