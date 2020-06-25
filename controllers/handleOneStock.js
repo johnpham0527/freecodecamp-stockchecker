@@ -2,12 +2,18 @@ const https = require('https');
 require('dotenv').config();
 const getDb = require('../db');
 
-function getPrice(rawData) { //given raw data from Alpha Vantage, get the price
+function getPriceAlphaVantage(rawData) { //given raw data from Alpha Vantage, get the price
     const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
     const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
     const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
     return timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
 }
+
+function getPriceRepeatedAlpaca(rawData) {
+    const parsedData = JSON.parse(rawData);
+    return parsedData.latestPrice;
+}
+
 
 function getLikesFromNewStock(stock, likeBoolean, ipAddress, db) {
     let likes = 0;
@@ -57,9 +63,10 @@ function handleOneStock(req, res, next) {
     const like = req.query.like;
     const ipAddress = req.ipInfo.ip; //obtain the IP address using middleware
     const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${req.query.stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
+    //const link = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`
 
     getDb.then(function(db) {
-        const stockRequest = https.get(link, function(stockResponse) {          
+        const stockRequest = https.get(link, function(stockResponse) {                 
             stockResponse.setEncoding('utf8');
             let rawData = '';
 
@@ -69,8 +76,9 @@ function handleOneStock(req, res, next) {
 
             stockResponse.on('end', function() {
                 try {
-                    db.collection('stocks').findOne({stock: stock}, async function(err, result) {
-                        let price = await getPrice(rawData); //get stock price
+                    db.collection('stocks').findOne({stock: stock}, function(err, result) {
+                        let price = getPriceAlphaVantage(rawData); //get stock price
+                        //let price = getPriceRepeatedAlpaca(rawData); //get stock price
                         let likes = 0; //initializing variable for how many times the stock was liked
 
                         if (err) {
@@ -107,4 +115,4 @@ function handleOneStock(req, res, next) {
     });
 }
 
-module.exports = { handleOneStock, getPrice, getLikesFromNewStock, getLikesFromExistingStock };
+module.exports = { handleOneStock, getPriceAlphaVantage, getLikesFromNewStock, getLikesFromExistingStock, getPriceRepeatedAlpaca };

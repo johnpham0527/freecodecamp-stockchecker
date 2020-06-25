@@ -2,7 +2,7 @@ const https = require('https');
 const http = require(`http`);
 require('dotenv').config();
 const getDb = require('../db');
-const { getPrice, getLikesFromExistingStock, getLikesFromNewStock } = require('./handleOneStock');
+const { getLikesFromExistingStock, getLikesFromNewStock, getPriceAlphaVantage } = require('./handleOneStock');
 
 function handleTwoStocks(req, res, next) {
     const stock1 = req.query.stock;
@@ -42,7 +42,7 @@ function handleTwoStocks(req, res, next) {
 
                         stockData1 = {
                             stock: stock1,
-                            price: getPrice(rawData1),
+                            price: getPriceAlphaVantage(rawData1),
                         };
                     })
 
@@ -71,7 +71,7 @@ function handleTwoStocks(req, res, next) {
             
                                     stockData2 = {
                                         stock: stock2,
-                                        price: await getPrice(rawData2),
+                                        price: await getPriceAlphaVantage(rawData2),
                                     };
 
                                     //calculate and assign rel_likes
