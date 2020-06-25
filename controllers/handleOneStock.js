@@ -28,11 +28,6 @@ function handleOneStock(req, res, next) {
 
             stockResponse.on('end', function() {
                 try {
-                    // const parsedData = JSON.parse(rawData); //parse the raw data in JSON format
-                    // const timeSeries = parsedData['Time Series (5min)']; //parse only the time series data
-                    // const mostRecentKey = Object.keys(timeSeries)[0]; //obtain the most recent key
-                    // price = timeSeries[mostRecentKey]['4. close']; //set price to the last five-minute interval's closing quote
-
                     price = getPrice(rawData);
 
                     db.collection('stocks').findOne({stock: stock}, function(err, result) {
