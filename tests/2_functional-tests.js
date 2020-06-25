@@ -18,67 +18,69 @@ suite('Functional Tests', function() {
     suite('GET /api/stock-prices => stockData object', function() {
       let likes;
 
-      test('1 stock', function(done) {
-        chai.request(server)
-        .get('/api/stock-prices')
-        .query({stock: 'goog'})
-        .end(function(err, res){
-          assert.equal(res.status, 200);
-          assert.isObject(res.body, 'stockData is an object');
-          assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
-          assert.property(res.body, 'price', 'stockData contains decimal price in string format');
-          assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
-          assert.isString(res.body.stock, 'stock is a string');
-          assert.isString(res.body.price, 'price is a string');
-          assert.isNumber(res.body.likes, 'likes is a number');
-          done();
-        });
-      });
+      // test('1 stock', function(done) {
+      //   chai.request(server)
+      //   .get('/api/stock-prices')
+      //   .query({stock: 'goog'})
+      //   .end(function(err, res){
+      //     assert.equal(res.status, 200);
+      //     assert.isObject(res.body, 'stockData is an object');
+      //     assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
+      //     assert.property(res.body, 'price', 'stockData contains decimal price in string format');
+      //     assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
+      //     assert.isString(res.body.stock, 'stock is a string');
+      //     assert.isString(res.body.price, 'price is a string');
+      //     assert.isNumber(res.body.likes, 'likes is a number');
+      //     done();
+      //   });
+      // });
       
-      test('1 stock with like', function(done) {
-        chai.request(server)
-        .get('/api/stock-prices')
-        .query({stock: 'goog', like: true})
-        .end(function(err, res){
-          assert.equal(res.status, 200);
-          assert.isObject(res.body, 'stockData is an object');
-          assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
-          assert.property(res.body, 'price', 'stockData contains decimal price in string format');
-          assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
-          assert.isString(res.body.stock, 'stock is a string');
-          assert.isString(res.body.price, 'price is a string');
-          assert.isNumber(res.body.likes, 'likes is a number');
+      // test('1 stock with like', function(done) {
+      //   chai.request(server)
+      //   .get('/api/stock-prices')
+      //   .query({stock: 'goog', like: true})
+      //   .end(function(err, res){
+      //     assert.equal(res.status, 200);
+      //     assert.isObject(res.body, 'stockData is an object');
+      //     assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
+      //     assert.property(res.body, 'price', 'stockData contains decimal price in string format');
+      //     assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
+      //     assert.isString(res.body.stock, 'stock is a string');
+      //     assert.isString(res.body.price, 'price is a string');
+      //     assert.isNumber(res.body.likes, 'likes is a number');
 
-          likes = res.body.likes; //we'll need to reference this updated likes value for the next test
+      //     likes = res.body.likes; //we'll need to reference this updated likes value for the next test
 
-          done();
-        });
-      });
+      //     done();
+      //   });
+      // });
       
-      test('1 stock with like again (ensure likes arent double counted)', function(done) {
-        chai.request(server)
-        .get('/api/stock-prices')
-        .query({stock: 'goog', like: true})
-        .end(function(err, res){
-          assert.equal(res.status, 200);
-          assert.isObject(res.body, 'stockData is an object');
-          assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
-          assert.property(res.body, 'price', 'stockData contains decimal price in string format');
-          assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
-          assert.isString(res.body.stock, 'stock is a string');
-          assert.isString(res.body.price, 'price is a string');
-          assert.isNumber(res.body.likes, 'likes is a number');
-          assert.equal(res.body.likes, likes, 'likes should not be double-counted and incremented');
+      // test('1 stock with like again (ensure likes arent double counted)', function(done) {
+      //   chai.request(server)
+      //   .get('/api/stock-prices')
+      //   .query({stock: 'goog', like: true})
+      //   .end(function(err, res){
+      //     assert.equal(res.status, 200);
+      //     assert.isObject(res.body, 'stockData is an object');
+      //     assert.property(res.body, 'stock', 'stockData object contains stock ticker string');
+      //     assert.property(res.body, 'price', 'stockData contains decimal price in string format');
+      //     assert.property(res.body, 'likes', 'stockData object contains likes, which is an integer');
+      //     assert.isString(res.body.stock, 'stock is a string');
+      //     assert.isString(res.body.price, 'price is a string');
+      //     assert.isNumber(res.body.likes, 'likes is a number');
+      //     assert.equal(res.body.likes, likes, 'likes should not be double-counted and incremented');
           
-          done();
-        });
-      });
+      //     done();
+      //   });
+      // });
       
       test('2 stocks', function(done) {
         chai.request(server)
         .get('/api/stock-prices')
         .query({stock: 'goog', stock2: 'msft'})
         .end(function(err, res) {
+          console.log(`Made it here. res.body is ${JSON.stringify(res.body)}. res.body.length is ${res.body.length}`);
+          
           assert.equal(res.status, 200);
           assert.isObject(res.body, 'stockData is an object');
           assert.isArray(res.body, 'the returned object is an array');
@@ -89,6 +91,7 @@ suite('Functional Tests', function() {
           assert.property(res.body[1], 'stock', 'the second stock contains stock ticker string');
           assert.property(res.body[1], 'price', 'the second stock contains decimal price in string format');
           assert.property(res.body[1], 'rel_likes', 'the second stock contains rel_likes, which is an integer');
+          
           done();
         })
       });
@@ -97,6 +100,8 @@ suite('Functional Tests', function() {
         //Pick two stocks that are not in the database
         //Get single price for both stocks. Do not indicate like. Store the like values (presumably zero).
         //Get the price for both stocks. Indicate like. Assert that the current like values for both stocks should be one greater than the stored value
+
+
       });
 
     });
