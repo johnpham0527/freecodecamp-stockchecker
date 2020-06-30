@@ -64,19 +64,20 @@ function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, 
     if (likeBoolean) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
         let ipArray = result.ip; //store the current value of the IP address array from the database
 
-        if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array
+        if (ipArray.indexOf(ipAddress) === -1) { //the IP address doesn't exist in the result.ip array, so we need to update likes and the IP array'
+
             likes++; //increment likes by one
             ipArray.push(ipAddress)//add ipAddress to the IP array
 
             db.collection('stocks').updateOne({stock: stock}, { $set: {likes: likes, ip: ipArray} }, function(err, updateResult) {
                 if (err) {
-                    console.log(`Error updating stock: ${err}`);
-                }
-                else {
-                    return done(null, likes)
+                    return done(err);
                 }
             })
         }
+    
+    return done(null, likes)
+
     }
 }
 
@@ -119,10 +120,11 @@ function handleOneStock(req, res, next) {
                             })
                         }
                         else { //the stock exists in the database
+                            console.log(`The stock exists in the database. Now calling handleLikesForExistingStock`);
                             handleLikesForExistingStock(result, stock,
-                                likeBoolean, ipAddress, db, function(err, likes) {
+                                like, ipAddress, db, function(err, likes) {
                                     if (err) {
-                                        console.log(err);
+                                        console.log(`Error handling likes: ${err}`);
                                     }
                                     return res.json({
                                         stock: stock,
