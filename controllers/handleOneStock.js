@@ -37,6 +37,28 @@ function getLikesFromNewStock(stock, likeBoolean, ipAddress, db) {
     return likes;
 }
 
+function handleLikesForNewStock(stock, likeBoolean, ipAddress, db, done) { //similar to getLikesFromNewStock, but uses error-first callback pattern
+    let likes = 0;
+    const ipArray = [];
+            
+    if (likeBoolean) { //set likes to 1 and add the IP address to the array only if the stock was liked
+        likes = 1;
+        ipArray.push(ipAddress);
+    }
+
+    db.collection('stocks').insertOne({
+        stock: stock,
+        likes: likes,
+        ip: ipArray
+    }, function(err, insertResult) {
+        if (err) {
+            console.log(`Error inserting stock into database: ${err}`);
+        }
+    });
+
+    return done(null, likes)
+}
+
 function getLikesFromExistingStock(result, stock, likeBoolean, ipAddress, db) {
     let likes = result.likes; //store the current value of likes from the database
 
@@ -75,10 +97,9 @@ function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, 
                 }
             })
         }
-    
-    return done(null, likes)
-
     }
+
+    return done(null, likes)
 }
 
 
@@ -119,9 +140,12 @@ function handleOneStock(req, res, next) {
                         }
             
                         if (!result) { //the stock doesn't already exist in the database
-                            likes = getLikesFromNewStock(stock, like, ipAddress, db); //insert new stock into database and get the number of likes (1)
-
-                            return responseJSON(stock, price, likes);
+                            handleLikesForNewStock(stock, like, ipAddress, db, function(err, likes) {
+                                if (err) {
+                                    console.log(`Error handling likes: ${err}`);
+                                }
+                                return responseJSON(stock, price, likes);
+                            });
                         }
                         else { //the stock exists in the database
                             handleLikesForExistingStock(result, stock,
@@ -130,7 +154,7 @@ function handleOneStock(req, res, next) {
                                         console.log(`Error handling likes: ${err}`);
                                     }
                                     return responseJSON(stock, price, likes);
-                                })
+                                });
                         }
                     })
                 }
