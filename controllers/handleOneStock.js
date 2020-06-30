@@ -80,6 +80,8 @@ function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, 
     }
 }
 
+
+
 function handleOneStock(req, res, next) {
     const stock = req.query.stock;
     const like = req.query.like;
@@ -109,16 +111,35 @@ function handleOneStock(req, res, next) {
             
                         if (!result) { //the stock doesn't already exist in the database
                             likes = getLikesFromNewStock(stock, like, ipAddress, db); //insert new stock into database and get the number of likes (1)
+
+                            return res.json({
+                                stock: stock,
+                                price: price,
+                                likes: likes
+                            })
                         }
                         else { //the stock exists in the database
-                            likes = getLikesFromExistingStock(result, stock, like, ipAddress, db);
+                            handleLikesForExistingStock(result, stock,
+                                likeBoolean, ipAddress, db, function(err, likes) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    return res.json({
+                                        stock: stock,
+                                        price: price,
+                                        likes: likes
+                                    })
+                                })
                         }
+                        // else { //the stock exists in the database
+                        //     likes = getLikesFromExistingStock(result, stock, like, ipAddress, db);
+                        // }
             
-                        return res.json({
-                            stock: stock,
-                            price: price,
-                            likes: likes
-                        })
+                        // return res.json({
+                        //     stock: stock,
+                        //     price: price,
+                        //     likes: likes
+                        // })
                         
                     })
                 }
