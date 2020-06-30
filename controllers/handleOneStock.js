@@ -52,7 +52,7 @@ function handleLikesForNewStock(stock, likeBoolean, ipAddress, db, done) { //sim
         ip: ipArray
     }, function(err, insertResult) {
         if (err) {
-            console.log(`Error inserting stock into database: ${err}`);
+            console.log(`Error handling likes: ${err}`);
         }
     });
 
@@ -93,7 +93,7 @@ function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, 
 
             db.collection('stocks').updateOne({stock: stock}, { $set: {likes: likes, ip: ipArray} }, function(err, updateResult) {
                 if (err) {
-                    return done(err);
+                    console.log(`Error handling likes: ${err}`);
                 }
             })
         }
@@ -140,21 +140,12 @@ function handleOneStock(req, res, next) {
                         }
             
                         if (!result) { //the stock doesn't already exist in the database
-                            handleLikesForNewStock(stock, like, ipAddress, db, function(err, likes) {
-                                if (err) {
-                                    console.log(`Error handling likes: ${err}`);
-                                }
-                                return responseJSON(stock, price, likes);
-                            });
+                            return handleLikesForNewStock(stock, like, ipAddress, db, 
+                                (err, likes) => responseJSON(stock, price, likes)); //error-first callback to return res.json
                         }
                         else { //the stock exists in the database
-                            handleLikesForExistingStock(result, stock,
-                                like, ipAddress, db, function(err, likes) {
-                                    if (err) {
-                                        console.log(`Error handling likes: ${err}`);
-                                    }
-                                    return responseJSON(stock, price, likes);
-                                });
+                            return handleLikesForExistingStock(result, stock, like, ipAddress, db, 
+                                (err, likes) =>  responseJSON(stock, price, likes)); //error-first callback to return res.json
                         }
                     })
                 }
@@ -172,4 +163,4 @@ function handleOneStock(req, res, next) {
     });
 }
 
-module.exports = { handleOneStock, getPriceAlphaVantage, getLikesFromNewStock, getLikesFromExistingStock, getPriceRepeatedAlpaca, handleLikesForExistingStock };
+module.exports = { handleOneStock, getPriceAlphaVantage, getLikesFromNewStock, getLikesFromExistingStock, getPriceRepeatedAlpaca, handleLikesForExistingStock, handleLikesForNewStock };
