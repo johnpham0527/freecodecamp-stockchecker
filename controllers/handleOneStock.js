@@ -90,6 +90,14 @@ function handleOneStock(req, res, next) {
     const link = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${req.query.stock}&interval=5min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
     //const link = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`
 
+    const responseJSON = (stock, price, likes) => {
+        return res.json({
+            stock: stock,
+            price: price,
+            likes: likes
+        })
+    }
+
     getDb.then(function(db) {
         const stockRequest = https.get(link, function(stockResponse) {                 
             stockResponse.setEncoding('utf8');
@@ -120,29 +128,14 @@ function handleOneStock(req, res, next) {
                             })
                         }
                         else { //the stock exists in the database
-                            console.log(`The stock exists in the database. Now calling handleLikesForExistingStock`);
                             handleLikesForExistingStock(result, stock,
                                 like, ipAddress, db, function(err, likes) {
                                     if (err) {
                                         console.log(`Error handling likes: ${err}`);
                                     }
-                                    return res.json({
-                                        stock: stock,
-                                        price: price,
-                                        likes: likes
-                                    })
+                                    return responseJSON(stock, price, likes);
                                 })
                         }
-                        // else { //the stock exists in the database
-                        //     likes = getLikesFromExistingStock(result, stock, like, ipAddress, db);
-                        // }
-            
-                        // return res.json({
-                        //     stock: stock,
-                        //     price: price,
-                        //     likes: likes
-                        // })
-                        
                     })
                 }
                 catch(err) {
