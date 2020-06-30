@@ -58,7 +58,7 @@ function getLikesFromExistingStock(result, stock, likeBoolean, ipAddress, db) {
     return likes;
 }
 
-function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, done) {
+function handleLikesForExistingStock(result, stock, likeBoolean, ipAddress, db, done) { //similar to getLikesFromExistingStock, but uses the error-first callback pattern
     let likes = result.likes; //store the current value of likes from the database
 
     if (likeBoolean) { //did the client like this stock? If so, check to see if likes needs to be increment based on the IP address
@@ -152,4 +152,4 @@ function handleOneStock(req, res, next) {
     });
 }
 
-module.exports = { handleOneStock, getPriceAlphaVantage, getLikesFromNewStock, getLikesFromExistingStock, getPriceRepeatedAlpaca };
+module.exports = { handleOneStock, getPriceAlphaVantage, getLikesFromNewStock, getLikesFromExistingStock, getPriceRepeatedAlpaca, handleLikesForExistingStock };
