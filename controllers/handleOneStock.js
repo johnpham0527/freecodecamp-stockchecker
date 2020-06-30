@@ -121,11 +121,7 @@ function handleOneStock(req, res, next) {
                         if (!result) { //the stock doesn't already exist in the database
                             likes = getLikesFromNewStock(stock, like, ipAddress, db); //insert new stock into database and get the number of likes (1)
 
-                            return res.json({
-                                stock: stock,
-                                price: price,
-                                likes: likes
-                            })
+                            return responseJSON(stock, price, likes);
                         }
                         else { //the stock exists in the database
                             handleLikesForExistingStock(result, stock,
